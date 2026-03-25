@@ -25,3 +25,21 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Agent orchestration (local working state)
+progress.txt
+specs/*.md
+!specs/.gitkeep
+
+# Angular
+.angular/
+
+# Playwright
+test-results/
+playwright-report/
+
+# Vitest
+coverage/
+
+# PostgreSQL
+*.sql.bak

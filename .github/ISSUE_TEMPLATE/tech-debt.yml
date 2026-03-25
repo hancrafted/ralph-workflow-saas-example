@@ -1,0 +1,73 @@
+name: Tech Debt / Refactor
+description: Address technical debt, refactoring, or infrastructure improvements
+labels: ["tech-debt"]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: A short description (e.g. "Migrate auth service to use generated GraphQL types")
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_state
+    attributes:
+      label: Current State
+      description: What's wrong or suboptimal about the current implementation
+    validations:
+      required: true
+
+  - type: textarea
+    id: desired_state
+    attributes:
+      label: Desired State
+      description: What it should look like after this work is done
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why does this matter now? What risk, pain, or opportunity drives this?
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected_areas
+    attributes:
+      label: Affected Areas
+      description: Files, modules, or services that will change
+      placeholder: |
+        - backend/src/auth/
+        - frontend/src/app/core/auth.service.ts
+
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk Assessment
+      options:
+        - Low (no behaviour changes)
+        - Medium (internal changes, same external interface)
+        - High (changes to public API or DB schema)
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      placeholder: |
+        - [ ] All existing tests pass
+        - [ ] No hand-written GraphQL types remain in affected modules
+        - [ ] ESLint passes with no suppressions
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      placeholder: |
+        - [ ] #1 — reason

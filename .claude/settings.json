@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run lint:fix)",
+      "Bash(npm run format:check)",
+      "Bash(npm run format)",
+      "Bash(npm run test)",
+      "Bash(npm run test:*)",
+      "Bash(npm run build)",
+      "Bash(npm run graphql:codegen)",
+      "Bash(npm install*)",
+      "Bash(npx playwright test*)",
+      "Bash(npx playwright install*)",
+      "Bash(npx vitest*)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git branch*)",
+      "Bash(git checkout*)",
+      "Bash(git worktree*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git merge*)",
+      "Bash(gh issue *)",
+      "Bash(gh pr *)",
+      "Bash(ls *)",
+      "Bash(pwd)"
+    ]
+  }
+}

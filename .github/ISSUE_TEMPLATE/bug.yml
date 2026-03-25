@@ -1,0 +1,77 @@
+name: Bug Report
+description: Report a bug or unexpected behaviour
+labels: ["bug"]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: A short description of the bug (e.g. "Login fails when email contains uppercase")
+      placeholder: "<component/feature> — <what goes wrong>"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened vs. what you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Go to ...
+        2. Click on ...
+        3. Enter ...
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behaviour
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behaviour
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: affected_layers
+    attributes:
+      label: Affected Layers
+      options:
+        - label: "Database"
+        - label: "Backend (NestJS)"
+        - label: "Frontend (Angular)"
+        - label: "GraphQL / API"
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Blocker
+        - Major
+        - Minor
+        - Cosmetic
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        Browser: Chrome 121
+        OS: macOS 14
+        Node: 20.x
