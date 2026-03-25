@@ -1,0 +1,12 @@
+{
+  "name": "@hc/root",
+  "version": "0.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "install:all": "pnpm install"
+  }
+}

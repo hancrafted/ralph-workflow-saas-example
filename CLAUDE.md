@@ -60,10 +60,37 @@ The stack is live. All tickets follow the full workflow.
 - E2E tests: `*.e2e-spec.ts` (in `e2e/` directory)
 
 **Validation pipeline (run in order):**
-1. `npm run lint` (ESLint)
-2. `npm run format:check` (Prettier)
-3. `npm run test` (Vitest)
-4. `npm run test:e2e` (Playwright)
+1. `pnpm run lint` (ESLint)
+2. `pnpm run format:check` (Prettier)
+3. `pnpm run test` (Vitest)
+4. `pnpm run test:e2e` (Playwright)
+
+---
+
+## Monorepo Structure (pnpm Workspaces)
+
+**Layout:**
+```
+/                        ← repo root (@hc/root)
+  apps/
+    backend/             ← NestJS app (@hc/backend)
+    frontend/            ← Angular app (@hc/frontend)
+  pnpm-workspace.yaml
+  package.json
+  tsconfig.base.json
+```
+
+**Package manager:** pnpm (>=9). Always use `pnpm` — never `npm` or `yarn`.
+
+**Common commands:**
+- `pnpm install` — install all workspace dependencies
+- `pnpm --filter @hc/backend <cmd>` — run a command in the backend package
+- `pnpm --filter @hc/frontend <cmd>` — run a command in the frontend package
+- `pnpm -r <cmd>` — run a command recursively across all workspace packages
+
+**Adding dependencies:**
+- Root dev tooling: `pnpm add -D <pkg> -w` (workspace root flag)
+- Per-app: `pnpm --filter @hc/backend add <pkg>`
 
 ---
 
