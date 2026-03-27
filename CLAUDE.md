@@ -19,27 +19,26 @@ This is a SaaS application built entirely via agent orchestration (Ralph loop pa
 
 This project uses a two-phase system. **Auto-detect the current phase before starting work:**
 
-### Bootstrap Phase (no `package.json` in repo root, `frontend/`, or `backend/`)
+### Bootstrap Phase — ✅ COMPLETE (2026-03-27)
 
-The stack doesn't exist yet. Tickets in this phase create the project foundation.
+All 8 foundation tickets (#1–#8) are merged. The stack is fully initialized.
+Bootstrap phase rules no longer apply — all new tickets follow Standard Phase.
 
-**Rules:**
-- Focus on: initializing project structure, installing dependencies, configuring tooling
-- No test/lint backpressure — there's nothing to run yet
-- Commit configurations and scaffolding directly
-- Update this file's Standard Phase section as conventions are established
-- After completing a bootstrap ticket, check if `package.json` now exists — if so, transition to Standard Phase
-
-### Standard Phase (package.json exists)
+### Standard Phase (ACTIVE)
 
 The stack is live. All tickets follow the full workflow.
 
 **Tech Stack:**
-- Frontend: Angular 21, PrimeNG, Tailwind CSS, Apollo Client (GraphQL), Luxon (dates), Lodash
-- Backend: NestJS, GraphQL module, PostGraphile (auto-generated GraphQL from PostgreSQL), schema stitching
-- Database: PostgreSQL, TypeORM (NestJS entities), PostGraphile reads DB schema directly
+- Frontend: Angular 21, PrimeNG 21, Tailwind CSS v4, Apollo Client (GraphQL), Luxon (dates), lodash-es
+- Backend: NestJS 11, Apollo Server 5 (code-first), PostGraphile 5 (library mode, auto-generated CRUD)
+- Database: PostgreSQL 16 (Docker Compose), TypeORM 0.3 (migrations only, `synchronize: false`)
 - Testing: Vitest (unit), Playwright (E2E)
-- Tooling: ESLint, Prettier
+- Tooling: ESLint 9 (flat config), Prettier 3, GraphQL Codegen
+
+**GraphQL Architecture:**
+- `/graphql` — NestJS Apollo code-first resolvers (custom business logic) ← **frontend targets this**
+- `/postgraphile` — PostGraphile auto-generated CRUD (allProjects, createProject, etc.)
+- Schema stitching was deferred — Grafast executor is incompatible with `@graphql-tools/stitch`
 
 **Schema-First Development Flow:**
 1. Write a PostgreSQL migration (TypeORM migration or raw SQL)
@@ -77,8 +76,9 @@ The stack is live. All tickets follow the full workflow.
 ```
 /                        ← repo root (@hc/root)
   apps/
-    backend/             ← NestJS app (@hc/backend)
-    frontend/            ← Angular app (@hc/frontend)
+    backend/             ← NestJS 11 app (@hc/backend)
+    frontend/            ← Angular 21 app (@hc/frontend)
+    infra/               ← Docker Compose + PostgreSQL (@hc/infra)
   pnpm-workspace.yaml
   package.json
   tsconfig.base.json

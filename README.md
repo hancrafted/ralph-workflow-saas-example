@@ -47,10 +47,15 @@ Then create your first ticket and run the loop:
 
 ## Project Phase
 
-This project uses a **two-phase** system detected automatically by the agents:
+✅ **Bootstrap complete** (as of 2026-03-27). All 8 foundation tickets merged.
 
-- **Bootstrap phase** (no `package.json` yet): First tickets initialise Angular 21, NestJS, and tooling — without test/lint backpressure since there is nothing to run yet.
-- **Standard phase** (stack exists): Full workflow — E2E tests first, schema-first development, complete validation pipeline.
+The project is now in **Standard Phase** — all new tickets follow the full Ralph workflow with E2E-first testing, schema-first development, and complete validation pipeline (lint → format → unit tests → E2E tests).
+
+### Architecture Notes
+
+- PostGraphile 5 serves auto-generated CRUD at `/postgraphile`
+- NestJS code-first resolvers serve custom business logic at `/graphql`
+- Schema stitching was deferred (Grafast/graphql-js incompatibility) — the frontend targets `/graphql`
 
 ## Documentation
 
@@ -60,6 +65,10 @@ This project uses a **two-phase** system detected automatically by the agents:
 ## Repository Structure
 
 ```
+apps/
+  backend/        # NestJS 11 + TypeORM + PostGraphile 5 + Apollo Server (@hc/backend)
+  frontend/       # Angular 21 + PrimeNG + Tailwind + Apollo Client (@hc/frontend)
+  infra/          # Docker Compose (PostgreSQL 16) (@hc/infra)
 .claude/
   agents/         # coordinator, implementer, verifier, requirements-engineer
   commands/       # /ralph, /new-ticket, /verify
