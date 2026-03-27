@@ -12,6 +12,7 @@
     "stop:infra": "docker compose -f apps/infra/docker-compose.yml down",
     "lint": "pnpm -r lint",
     "format:check": "pnpm -r format:check",
+    "dev": "pnpm --filter @hc/backend dev & pnpm --filter @hc/frontend dev & wait",
     "test": "pnpm -r test"
   }
 }
