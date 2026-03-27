@@ -23,6 +23,8 @@ Then create your first ticket and run the loop:
 | `/new-ticket` | Turn a rough idea into a structured GitHub Issue (grill-me interview) |
 | `/ralph` | Implement the highest-priority unblocked ticket |
 | `/ralph #42` | Implement a specific ticket |
+| `/ralph --auto-merge` | Implement and auto-merge the PR |
+| `/ralph --auto` | Fully autonomous: skip spec approval, auto-PR, auto-merge |
 | `/verify` | Run pre-merge verification on the current branch |
 
 ## How It Works

@@ -5,9 +5,13 @@
 This is a SaaS application built entirely via agent orchestration (Ralph loop pattern). The repo contains both the orchestration infrastructure and the application code.
 
 **Orchestration commands:**
-- `/ralph [#issue]` — Execute one ticket (AI picks if no issue specified)
+- `/ralph [#issue] [--auto-merge] [--auto]` — Execute one ticket (AI picks if no issue specified)
 - `/new-ticket` — Requirements engineering (grill-me interview → structured GitHub Issue)
 - `/verify` — Standalone pre-merge verification
+
+**`/ralph` flags:**
+- `--auto-merge` — Auto-merge the PR after creation (spec approval still required)
+- `--auto` — Fully autonomous: skip spec approval + auto-create PR + auto-merge
 
 ---
 
@@ -116,8 +120,11 @@ The stack is live. All tickets follow the full workflow.
 ## Agent Workflow Rules
 
 - The user manually invokes orchestration commands — never auto-loop
-- **Decision points require user confirmation:** ticket selection, spec approval, recovery strategy, PR creation
-- When stuck after 3 attempts at fixing a failing test/lint issue: **stop**, post a diagnostic comment on the GitHub Issue, present recovery options to the user
+- **Default behavior:** Spec approval requires user confirmation. PR is auto-created after verification passes. Merge is manual.
+- **`--auto-merge`:** Same as default + auto-merge after PR creation.
+- **`--auto`:** Skip spec approval (spec still saved) + auto-PR + auto-merge. Only stops on failure.
+- **All modes:** When stuck after 3 attempts or verification fails — **stop**, post a diagnostic comment on the GitHub Issue, present recovery options to the user. No PR or merge on failure.
+- **PR body must always contain `Closes #N`** to auto-close the issue on merge. After API merge, fallback-close the issue if still open.
 - Use subagents for read-only exploration (codebase search, file reading). Implementation is single-threaded.
 - Issue dependencies use GitHub task list relations (`- [ ] #N`) — check these before starting a ticket
 
