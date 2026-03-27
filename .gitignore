@@ -41,5 +41,8 @@ playwright-report/
 # Vitest
 coverage/
 
+# GraphQL Codegen
+**/src/generated/
+
 # PostgreSQL
 *.sql.bak
