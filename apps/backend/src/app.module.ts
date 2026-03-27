@@ -3,7 +3,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostGraphileModule } from './postgraphile/postgraphile.module';
 import { ProjectEntity } from './project/project.entity';
 import { ProjectModule } from './project/project.module';
 
@@ -39,7 +38,6 @@ import { ProjectModule } from './project/project.module';
         path: '/graphql',
       }),
     }),
-    PostGraphileModule,
     ProjectModule,
   ],
 })

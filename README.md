@@ -5,8 +5,13 @@ A SaaS application built entirely through AI agent orchestration. No application
 ## Quick Start
 
 ```bash
-# Check prerequisites (Node 20+, gh CLI, psql)
-bash init.sh
+# One-command setup (requires Docker running)
+make start
+
+# Or step by step:
+make init    # install deps, start DB, run migrations
+make seed    # insert sample data
+make dev     # start backend + frontend
 ```
 
 Then create your first ticket and run the loop:
@@ -40,7 +45,7 @@ Then create your first ticket and run the loop:
 | Layer | Technology |
 |-------|------------|
 | Frontend | Angular 21, PrimeNG, Tailwind CSS, Apollo Client |
-| Backend | NestJS, GraphQL, PostGraphile (schema stitching) |
+| Backend | NestJS, GraphQL (code-first), TypeORM |
 | Database | PostgreSQL, TypeORM |
 | Testing | Vitest (unit), Playwright (E2E) |
 | Tooling | ESLint, Prettier |
@@ -53,9 +58,8 @@ The project is now in **Standard Phase** — all new tickets follow the full Ral
 
 ### Architecture Notes
 
-- PostGraphile 5 serves auto-generated CRUD at `/postgraphile`
-- NestJS code-first resolvers serve custom business logic at `/graphql`
-- Schema stitching was deferred (Grafast/graphql-js incompatibility) — the frontend targets `/graphql`
+- NestJS code-first resolvers serve the GraphQL API at `/graphql`
+- TypeORM handles database access and migrations
 
 ## Documentation
 
@@ -66,7 +70,7 @@ The project is now in **Standard Phase** — all new tickets follow the full Ral
 
 ```
 apps/
-  backend/        # NestJS 11 + TypeORM + PostGraphile 5 + Apollo Server (@hc/backend)
+  backend/        # NestJS 11 + TypeORM + Apollo Server (GraphQL code-first) (@hc/backend)
   frontend/       # Angular 21 + PrimeNG + Tailwind + Apollo Client (@hc/frontend)
   infra/          # Docker Compose (PostgreSQL 16) (@hc/infra)
 .claude/
@@ -81,4 +85,14 @@ docs/
 specs/            # agent-extracted ticket specs (gitignored, local only)
 CLAUDE.md         # agent instructions and project conventions
 progress.txt      # cross-session agent memory (gitignored)
+```
+
+## Development
+
+```bash
+# Start everything (DB + backend + frontend)
+make dev
+
+# Or use pnpm directly
+pnpm dev          # runs backend and frontend concurrently
 ```
