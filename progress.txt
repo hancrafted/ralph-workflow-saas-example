@@ -1,0 +1,72 @@
+# Project Progress — HC SaaS
+
+Last updated: 2026-03-27
+Updated by: Setup Audit (manual)
+
+## Phase
+
+Standard Phase (ACTIVE) — Bootstrap complete as of 2026-03-27.
+
+## Completed Tickets
+
+| Issue | Title | PR | Merged |
+|-------|-------|----|--------|
+| #1 | Initialize pnpm monorepo | #9 | 2026-03-25 |
+| #2 | Docker Compose PostgreSQL | #10 | 2026-03-25 |
+| #3 | NestJS + TypeORM scaffold | #11 | 2026-03-25 |
+| #4 | PostGraphile + NestJS GraphQL | #12 | 2026-03-27 |
+| #5 | Backend tooling (codegen, eslint, prettier, vitest) | #14 | 2026-03-27 |
+| #6 | Angular 21 scaffold | #13 | 2026-03-27 |
+| #7 | Apollo Client + projects page E2E | #15 | 2026-03-27 |
+| #8 | Frontend tooling (eslint, prettier, vitest, playwright) | #18 | 2026-03-27 |
+| #16 | Ralph workflow improvements (--auto, --auto-merge) | #17 | 2026-03-27 |
+
+## Open Tickets
+
+| Issue | Title | Status |
+|-------|-------|--------|
+| #19 | Fix project setup: Makefile, seed data, remove PostGraphile, update docs | Not started |
+
+## Current Architecture
+
+### Database
+- PostgreSQL 16 (Docker Compose, `apps/infra/`)
+- Tables: `project` (id UUID PK, name, description, created_at, updated_at)
+- Migrations via TypeORM CLI (`synchronize: false`)
+
+### Backend (apps/backend/)
+- NestJS 11 on port 3000
+- `/graphql` — Apollo Server 5, code-first resolvers (ProjectResolver: allProjects, hello)
+- `/postgraphile` — PostGraphile 5 auto-generated CRUD (⚠️ to be removed in #19)
+- TypeORM entities: ProjectEntity
+
+### Frontend (apps/frontend/)
+- Angular 21 on port 4200
+- PrimeNG 21 (Aura theme), Tailwind CSS v4
+- Routes: `/` → redirect to `/projects`
+- `/projects` — PrimeNG p-table showing allProjects via Apollo Client
+- Apollo Client targets `/graphql`
+
+### Tooling
+- ESLint 9 (flat config) — backend + frontend
+- Prettier 3 — backend + frontend
+- Vitest — backend + frontend (placeholder tests only)
+- Playwright — frontend (placeholder E2E only)
+- GraphQL Codegen — backend + frontend (introspects `/graphql`)
+
+## Known Tech Debt
+
+- PostGraphile adds unnecessary complexity — removal planned in #19
+- No seed data — fresh checkout shows empty projects table
+- No `make start` / single setup command
+- README references non-existent `init.sh`
+- Only placeholder tests exist — no real test patterns yet
+- Schema stitching was deferred (Grafast incompatible with @graphql-tools/stitch)
+- progress.txt was missing until this commit
+
+## Decisions
+
+- Schema stitching deferred: PostGraphile Grafast executor incompatible with @graphql-tools/stitch
+- Separate endpoints chosen as fallback: /graphql (NestJS) + /postgraphile (PostGraphile)
+- Frontend targets /graphql only (NestJS code-first)
+- specs/ directory removed — GitHub issue body is the spec, PR body is the implementation record

@@ -26,10 +26,8 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Agent orchestration (local working state)
-progress.txt
-specs/*.md
-!specs/.gitkeep
+# Agent orchestration
+# progress.txt is tracked (cross-session memory — must persist across worktrees)
 
 # Angular
 .angular/

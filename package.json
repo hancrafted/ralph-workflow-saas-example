@@ -13,6 +13,7 @@
     "lint": "pnpm -r lint",
     "format:check": "pnpm -r format:check",
     "dev": "pnpm --filter @hc/backend dev & pnpm --filter @hc/frontend dev & wait",
-    "test": "pnpm -r test"
+    "test": "pnpm -r test",
+    "validate": "pnpm run lint && pnpm run format:check && pnpm run test"
   }
 }
