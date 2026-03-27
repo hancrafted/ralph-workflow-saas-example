@@ -30,23 +30,20 @@ The stack is live. All tickets follow the full workflow.
 
 **Tech Stack:**
 - Frontend: Angular 21, PrimeNG 21, Tailwind CSS v4, Apollo Client (GraphQL), Luxon (dates), lodash-es
-- Backend: NestJS 11, Apollo Server 5 (code-first), PostGraphile 5 (library mode, auto-generated CRUD)
+- Backend: NestJS 11, Apollo Server 5 (code-first)
 - Database: PostgreSQL 16 (Docker Compose), TypeORM 0.3 (migrations only, `synchronize: false`)
 - Testing: Vitest (unit), Playwright (E2E)
 - Tooling: ESLint 9 (flat config), Prettier 3, GraphQL Codegen
 
 **GraphQL Architecture:**
-- `/graphql` — NestJS Apollo code-first resolvers (custom business logic) ← **frontend targets this**
-- `/postgraphile` — PostGraphile auto-generated CRUD (allProjects, createProject, etc.)
-- Schema stitching was deferred — Grafast executor is incompatible with `@graphql-tools/stitch`
+- `/graphql` — NestJS Apollo code-first resolvers (custom business logic)
 
 **Schema-First Development Flow:**
 1. Write a PostgreSQL migration (TypeORM migration or raw SQL)
 2. Run migration against local DB
-3. PostGraphile auto-detects new tables/columns → exposes GraphQL
-4. Run `graphql-codegen` to generate TypeScript types from the combined schema
-5. Use generated types in Angular (Apollo) and NestJS (resolvers)
-6. **Never hand-write GraphQL types** — always generate from schema
+3. Run `graphql-codegen` to generate TypeScript types from the schema
+4. Use generated types in Angular (Apollo) and NestJS (resolvers)
+5. **Never hand-write GraphQL types** — always generate from schema
 
 ---
 
