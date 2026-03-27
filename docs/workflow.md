@@ -119,9 +119,9 @@ flowchart TD
     V -->|Yes| K["gh pr create\n(body includes Closes #N)"]
     K --> L[Update progress.txt]
     L --> M{--auto-merge\nor --auto?}
-    M -->|Yes| N["gh pr merge --squash\n+ fallback issue close"]
+    M -->|Yes| N["gh pr merge --squash --delete-branch\n+ fallback issue close"]
     M -->|No| O([Done — manual merge])
-    N --> P([Done — merged & issue closed])
+    N --> P([Done — merged & branch deleted & issue closed])
 ```
 
 ### Phase breakdown
@@ -203,7 +203,7 @@ gitGraph
 
 - Each ticket gets a **worktree** and a **feature branch**
 - Many small commits on the feature branch (rich history)
-- **Squash merge** to main — one commit per feature
+- **Squash merge** to main — one commit per feature, remote branch deleted after merge
 - The PR description is the permanent knowledge artifact — searchable, structured, linked to the issue
 
 ---

@@ -103,7 +103,7 @@ The stack is live. All tickets follow the full workflow.
 - **Always work in a git worktree** (one per ticket)
 - **Branch naming:** `feat/<issue-number>-<short-description>`, `fix/<issue-number>-<short-description>`, `refactor/<issue-number>-<short-description>`
 - **Commit messages:** Conventional commits (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`)
-- **PRs:** Squash merge to main. PR description is the knowledge artifact (use the PR template).
+- **PRs:** Squash merge to main. Delete the remote branch after merge. PR description is the knowledge artifact (use the PR template).
 - **Never commit directly to main**
 
 ---

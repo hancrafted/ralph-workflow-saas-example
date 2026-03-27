@@ -112,6 +112,8 @@ If the `autoMerge` flag is NOT set:
 - Inform the user the PR is ready for manual review and merge.
 - **Fallback:** When the user later merges manually, the `Closes #N` in the PR body handles issue closure. No action needed from the coordinator.
 
+**Note:** Always delete the remote branch after merge (`--delete-branch`). Feature branches are single-use — they should not persist after merge.
+
 ## Failure Recovery
 
 When the implementer escalates (stuck after 3 attempts):
