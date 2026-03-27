@@ -15,5 +15,8 @@
     "dev": "pnpm --filter @hc/backend dev & pnpm --filter @hc/frontend dev & wait",
     "test": "pnpm -r test",
     "validate": "pnpm run lint && pnpm run format:check && pnpm run test"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "@parcel/watcher", "lmdb", "msgpackr-extract"]
   }
 }

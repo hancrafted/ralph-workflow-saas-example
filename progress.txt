@@ -1,7 +1,7 @@
 # Project Progress — HC SaaS
 
 Last updated: 2026-03-27
-Updated by: Setup Audit
+Updated by: Make Start Fixes
 
 ## Phase
 
@@ -35,7 +35,7 @@ None.
 - Migrations via TypeORM CLI (`synchronize: false`)
 
 ### Backend (apps/backend/)
-- NestJS 11 on port 3000
+- NestJS 11 on port 3000 (CORS enabled for dev)
 - `/graphql` — Apollo Server 5, code-first resolvers (ProjectResolver: allProjects, hello)
 - TypeORM entities: ProjectEntity
 
@@ -52,7 +52,7 @@ None.
 - Vitest — backend + frontend (placeholder tests only)
 - Playwright — frontend (placeholder E2E only)
 - GraphQL Codegen — backend + frontend (introspects `/graphql`)
-- Makefile: `make start` (init + seed + dev), `make init`, `make seed`, `make dev`, `make stop`
+- Makefile: `make start` (init + seed + dev) — uses Docker for all DB operations, no local PostgreSQL tools required
 - `pnpm run validate` — runs lint + format:check + test in sequence
 
 ## Known Tech Debt
@@ -68,3 +68,6 @@ None.
 - Frontend targets `/graphql` only (NestJS code-first)
 - specs/ directory removed — GitHub issue body is the spec, PR body is the implementation record
 - progress.txt tracked in git (not gitignored) for cross-session persistence
+- Makefile uses `docker compose exec` for pg_isready/psql — no local PostgreSQL tools required
+- Backend CORS enabled with `origin: true` for local development
+- pnpm.onlyBuiltDependencies configured for esbuild, @parcel/watcher, lmdb, msgpackr-extract

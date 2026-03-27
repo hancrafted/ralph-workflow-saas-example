@@ -54,7 +54,7 @@ init:
 	@$(DC) up -d
 	@echo "==> Waiting for PostgreSQL to be ready..."
 	@for i in $$(seq 1 30); do \
-		pg_isready -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -q && break; \
+		$(DC) exec -T postgres pg_isready -U $(DB_USER) -q && break; \
 		if [ $$i -eq 30 ]; then echo "❌ PostgreSQL did not become ready in time" && exit 1; fi; \
 		sleep 1; \
 	done
@@ -67,7 +67,7 @@ init:
 ## seed: Load sample data into the database
 seed:
 	@echo "==> Seeding database..."
-	@PGPASSWORD=$(POSTGRES_PASSWORD) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME) -f apps/infra/seed.sql
+	@$(DC) exec -T postgres psql -U $(DB_USER) -d $(DB_NAME) < apps/infra/seed.sql
 	@echo "✅ Seed complete"
 
 ## dev: Start Docker, backend, and frontend for development
