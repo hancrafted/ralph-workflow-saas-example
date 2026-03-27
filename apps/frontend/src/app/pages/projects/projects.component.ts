@@ -1,9 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { TableModule } from 'primeng/table';
 import { DateTime } from 'luxon';
@@ -63,9 +58,8 @@ interface Project {
   `,
 })
 export class ProjectsComponent implements OnInit {
+  private readonly apollo = inject(Apollo);
   projects = signal<Project[]>([]);
-
-  constructor(private readonly apollo: Apollo) {}
 
   ngOnInit(): void {
     this.apollo
