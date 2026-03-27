@@ -174,13 +174,13 @@ All database-touching features follow this exact order:
 ```mermaid
 flowchart LR
     A[Write TypeORM\nmigration] --> B[Run migration\nagainst local DB]
-    B --> C[PostGraphile\nauto-detects changes]
+    B --> C[NestJS resolver\nexposes new fields]
     C --> D[Run graphql-codegen\ngenerate TypeScript types]
     D --> E[Use generated types\nin NestJS resolvers]
     D --> F[Use generated types\nin Angular Apollo client]
 ```
 
-**Never hand-write GraphQL types.** They are always generated from the database schema via PostGraphile + codegen.
+**Never hand-write GraphQL types.** They are always generated from the database schema via codegen.
 
 ---
 
@@ -196,7 +196,7 @@ gitGraph
     merge feat/1-init-angular id: "squash merge"
     branch feat/2-init-nestjs
     commit id: "chore: init NestJS"
-    commit id: "chore: configure PostGraphile"
+    commit id: "chore: configure GraphQL"
     checkout main
     merge feat/2-init-nestjs id: "squash merge "
 ```
