@@ -59,11 +59,9 @@ The stack is live. All tickets follow the full workflow.
 - Unit tests: `*.spec.ts` (co-located with source)
 - E2E tests: `*.e2e-spec.ts` (in `e2e/` directory)
 
-**Validation pipeline (run in order):**
-1. `pnpm run lint` (ESLint)
-2. `pnpm run format:check` (Prettier)
-3. `pnpm run test` (Vitest)
-4. `pnpm run test:e2e` (Playwright)
+**Validation pipeline:**
+- `pnpm run validate` — runs lint, format:check, and test in sequence
+- `pnpm run test:e2e` — Playwright E2E tests (run separately, requires dev servers)
 
 ---
 
@@ -107,10 +105,10 @@ The stack is live. All tickets follow the full workflow.
 
 ## Cross-Session Memory
 
-- `progress.txt` in repo root tracks session state
+- `progress.txt` in repo root tracks session state and current architecture (tracked in git)
 - **At session start:** Always read `progress.txt` and recent `git log`
 - **At session end:** Always update `progress.txt` with what was done, what's in progress, decisions made
-- Specs extracted from issues live in `specs/<issue-number>.md` (gitignored, local working files)
+- The GitHub issue body is the spec. The PR body is the implementation record. No separate spec files.
 
 ---
 
@@ -119,7 +117,7 @@ The stack is live. All tickets follow the full workflow.
 - The user manually invokes orchestration commands — never auto-loop
 - **Default behavior:** Spec approval requires user confirmation. PR is auto-created after verification passes. Merge is manual.
 - **`--auto-merge`:** Same as default + auto-merge after PR creation.
-- **`--auto`:** Skip spec approval (spec still saved) + auto-PR + auto-merge. Only stops on failure.
+- **`--auto`:** Skip spec approval + auto-PR + auto-merge. Only stops on failure.
 - **All modes:** When stuck after 3 attempts or verification fails — **stop**, post a diagnostic comment on the GitHub Issue, present recovery options to the user. No PR or merge on failure.
 - **PR body must always contain `Closes #N`** to auto-close the issue on merge. After API merge, fallback-close the issue if still open.
 - Use subagents for read-only exploration (codebase search, file reading). Implementation is single-threaded.
