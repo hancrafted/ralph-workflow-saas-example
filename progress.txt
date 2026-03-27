@@ -1,7 +1,7 @@
 # Project Progress — HC SaaS
 
 Last updated: 2026-03-27
-Updated by: Setup Audit (manual)
+Updated by: Setup Audit
 
 ## Phase
 
@@ -20,24 +20,23 @@ Standard Phase (ACTIVE) — Bootstrap complete as of 2026-03-27.
 | #7 | Apollo Client + projects page E2E | #15 | 2026-03-27 |
 | #8 | Frontend tooling (eslint, prettier, vitest, playwright) | #18 | 2026-03-27 |
 | #16 | Ralph workflow improvements (--auto, --auto-merge) | #17 | 2026-03-27 |
+| #19 | Fix project setup: Makefile, seed data, remove PostGraphile | #20 | 2026-03-27 |
 
 ## Open Tickets
 
-| Issue | Title | Status |
-|-------|-------|--------|
-| #19 | Fix project setup: Makefile, seed data, remove PostGraphile, update docs | Not started |
+None.
 
 ## Current Architecture
 
 ### Database
 - PostgreSQL 16 (Docker Compose, `apps/infra/`)
 - Tables: `project` (id UUID PK, name, description, created_at, updated_at)
+- Seed data: `apps/infra/seed.sql` (1 sample project, idempotent)
 - Migrations via TypeORM CLI (`synchronize: false`)
 
 ### Backend (apps/backend/)
 - NestJS 11 on port 3000
 - `/graphql` — Apollo Server 5, code-first resolvers (ProjectResolver: allProjects, hello)
-- `/postgraphile` — PostGraphile 5 auto-generated CRUD (⚠️ to be removed in #19)
 - TypeORM entities: ProjectEntity
 
 ### Frontend (apps/frontend/)
@@ -53,20 +52,19 @@ Standard Phase (ACTIVE) — Bootstrap complete as of 2026-03-27.
 - Vitest — backend + frontend (placeholder tests only)
 - Playwright — frontend (placeholder E2E only)
 - GraphQL Codegen — backend + frontend (introspects `/graphql`)
+- Makefile: `make start` (init + seed + dev), `make init`, `make seed`, `make dev`, `make stop`
+- `pnpm run validate` — runs lint + format:check + test in sequence
 
 ## Known Tech Debt
 
-- PostGraphile adds unnecessary complexity — removal planned in #19
-- No seed data — fresh checkout shows empty projects table
-- No `make start` / single setup command
-- README references non-existent `init.sh`
 - Only placeholder tests exist — no real test patterns yet
-- Schema stitching was deferred (Grafast incompatible with @graphql-tools/stitch)
-- progress.txt was missing until this commit
+- No branch protection on `main` — direct pushes still possible
+- 2 historical direct-to-main commits (docs/config only, not fixable)
+- Early PRs (#9–#12) used merge commits instead of squash (corrected from #13 onward)
 
 ## Decisions
 
-- Schema stitching deferred: PostGraphile Grafast executor incompatible with @graphql-tools/stitch
-- Separate endpoints chosen as fallback: /graphql (NestJS) + /postgraphile (PostGraphile)
-- Frontend targets /graphql only (NestJS code-first)
+- PostGraphile removed (#19) — was incompatible with schema stitching (Grafast executor), added unnecessary complexity. Single `/graphql` endpoint via NestJS code-first.
+- Frontend targets `/graphql` only (NestJS code-first)
 - specs/ directory removed — GitHub issue body is the spec, PR body is the implementation record
+- progress.txt tracked in git (not gitignored) for cross-session persistence
