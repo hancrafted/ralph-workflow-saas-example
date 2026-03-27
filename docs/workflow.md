@@ -11,9 +11,17 @@ Two workflows are available:
 | Workflow | Command | Purpose |
 |----------|---------|---------|
 | Requirements Engineering | `/new-ticket` | Turn a rough idea into a structured GitHub Issue |
-| Ralph Execution Loop | `/ralph [#issue]` | Implement a ticket end-to-end |
+| Ralph Execution Loop | `/ralph [#issue] [flags]` | Implement a ticket end-to-end |
 
-Both workflows are human-in-the-loop by default. You control the pace — nothing runs autonomously without your approval.
+**Flags for `/ralph`:**
+
+| Flag | Spec Approval | PR Creation | Merge |
+|------|---------------|-------------|-------|
+| *(none)* | ✅ User approves | ⏭️ Auto | ❌ Manual |
+| `--auto-merge` | ✅ User approves | ⏭️ Auto | ✅ Auto |
+| `--auto` | ⏭️ Skipped (spec still saved) | ⏭️ Auto | ✅ Auto |
+
+By default, spec approval is human-in-the-loop. PR creation is automatic after verification passes. Use `--auto` for fully autonomous operation.
 
 ---
 
@@ -70,7 +78,7 @@ GitHub renders these as tracked relationships. Agents check them programmaticall
 
 ```mermaid
 flowchart TD
-    A(["/ralph &#91;#issue&#93;"]) --> B{Issue\nspecified?}
+    A(["/ralph &#91;#issue&#93; &#91;flags&#93;"]) --> B{Issue\nspecified?}
     B -->|Yes #N| D
     B -->|No| C[Read progress.txt\nfor in-progress work]
     C --> C1{In-progress\nwork found?}
@@ -82,9 +90,11 @@ flowchart TD
     C5 --> D
 
     D --> E[Extract structured spec\ninto specs/N.md]
-    E --> F{USER:\nApprove spec?}
-    F -->|Edit| E
-    F -->|Approve| G[Create worktree\n+ feature branch]
+    E --> F{--auto\nflag?}
+    F -->|No| F1{USER:\nApprove spec?}
+    F1 -->|Edit| E
+    F1 -->|Approve| G
+    F -->|Yes| G[Create worktree\n+ feature branch]
 
     G --> H[[Implementer Agent]]
     H --> H1[Phase 1: Plan\nidentify layers & order]
@@ -104,11 +114,14 @@ flowchart TD
     I1 --> I2[Check each acceptance criterion]
     I2 --> I3[Run full test suite]
     I3 --> I4[Produce verification report]
-    I4 --> J{USER:\nApprove report?}
-    J -->|Request changes| H2
-    J -->|Approve| K["gh pr create\nwith PR template"]
+    I4 --> V{Verification\npassed?}
+    V -->|No| FAIL
+    V -->|Yes| K["gh pr create\n(body includes Closes #N)"]
     K --> L[Update progress.txt]
-    L --> M([Done — squash merge on GitHub])
+    L --> M{--auto-merge\nor --auto?}
+    M -->|Yes| N["gh pr merge --squash\n+ fallback issue close"]
+    M -->|No| O([Done — manual merge])
+    N --> P([Done — merged & issue closed])
 ```
 
 ### Phase breakdown
@@ -132,11 +145,14 @@ Independent check against the spec:
 - Maps each acceptance criterion to evidence in the code or tests
 - Runs the full validation pipeline
 - Produces a PASS/FAIL report per criterion
+- **If verification fails:** loop stops — no PR, no merge. Diagnostic posted, user intervenes.
 
 #### Phase 4: Ship
-- You review the verification report
-- On approval: PR is created with the knowledge-artifact template
-- You squash merge on GitHub — main stays clean
+- **PR is auto-created** after verification passes (no user gate). PR body always includes `Closes #N`.
+- **Default:** User reviews PR and squash merges manually on GitHub.
+- **`--auto-merge`:** PR is auto-merged via API after creation.
+- **`--auto`:** Same as `--auto-merge` (spec approval was already skipped in Phase 1).
+- After API merge, fallback-close the issue if `Closes #N` didn't trigger.
 
 ### Bootstrap vs Standard Phase
 
