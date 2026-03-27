@@ -1,19 +1,18 @@
 import { Query, Resolver } from '@nestjs/graphql';
+import { Project } from './project.model';
+import { ProjectService } from './project.service';
 
-/**
- * Minimal code-first resolver that proves the NestJS GraphQL layer works
- * alongside the PostGraphile endpoint.
- *
- * Full CRUD operations are handled automatically by PostGraphile at /postgraphile
- * (allProjects, projectById, createProject, updateProject, deleteProject).
- *
- * This resolver can be extended with custom business-logic queries/mutations
- * that are outside PostGraphile's auto-generated scope.
- */
-@Resolver()
+@Resolver(() => Project)
 export class ProjectResolver {
+  constructor(private readonly projectService: ProjectService) {}
+
   @Query(() => String)
   hello(): string {
     return 'NestJS GraphQL layer is operational';
+  }
+
+  @Query(() => [Project], { name: 'allProjects' })
+  async allProjects(): Promise<Project[]> {
+    return this.projectService.findAll();
   }
 }
