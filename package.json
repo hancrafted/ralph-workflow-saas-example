@@ -9,6 +9,9 @@
   "scripts": {
     "install:all": "pnpm install",
     "dev:infra": "docker compose -f apps/infra/docker-compose.yml up -d",
-    "stop:infra": "docker compose -f apps/infra/docker-compose.yml down"
+    "stop:infra": "docker compose -f apps/infra/docker-compose.yml down",
+    "lint": "pnpm -r lint",
+    "format:check": "pnpm -r format:check",
+    "test": "pnpm -r test"
   }
 }
