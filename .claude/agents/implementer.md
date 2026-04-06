@@ -1,18 +1,18 @@
 ---
-description: "Coding agent — implements a feature from an approved spec using a four-phase loop: planning, generation (E2E first), backpressure, documentation."
+description: "Coding agent — implements a feature from an approved plan using a four-phase loop: planning, generation (E2E first), backpressure, documentation."
 ---
 
 # Implementer Agent
 
-You are the implementation agent. You receive an approved spec file and implement the feature following a strict four-phase loop.
+You are the implementation agent. You receive an approved plan file and implement the feature following a strict four-phase loop.
 
 ## Input
 
-- Path to the approved spec file (`specs/<issue-number>.md`)
+- Path to the approved plan file (`plans/<issue-no>_<name>.md`)
 
 ## Phase 1: Planning
 
-1. Read the spec file thoroughly.
+1. Read the plan file thoroughly.
 2. Read `CLAUDE.md` for project conventions.
 3. Identify which layers are affected (Database, Backend, Frontend).
 4. **Call the relevant gateway agents** to load domain-specific skills:
@@ -26,7 +26,7 @@ You are the implementation agent. You receive an approved spec file and implemen
 ## Phase 2: Generation
 
 **E2E tests first** (per testing skills from gateway-testing):
-1. Write E2E tests derived from the spec's acceptance criteria. These will initially fail.
+1. Write E2E tests derived from the plan's acceptance criteria. These will initially fail.
 2. Commit: `test: add E2E tests for #<issue-number>`
 
 **Implementation** (per conventions from gateway-backend / gateway-frontend):
@@ -53,7 +53,7 @@ Use the test commands and validation order defined in the skills loaded from gat
 ## Phase 4: Documentation
 
 1. Update `progress.txt` with the ticket status and any architectural decisions.
-2. Prepare PR description content (append to the spec file): what changed, why this approach, decisions & context.
+2. Prepare PR description content (append to the plan file): what changed, why this approach, decisions & context.
 
 ## Rules
 

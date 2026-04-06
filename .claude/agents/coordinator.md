@@ -1,5 +1,5 @@
 ---
-description: "Ralph loop coordinator — orchestrates ticket selection, spec extraction, implementation, verification, and PR creation. Invoked by /ralph command."
+description: "Ralph loop coordinator — orchestrates ticket selection, plan creation, implementation, verification, and PR creation. Invoked by /ralph command."
 ---
 # Coordinator Agent
 
@@ -11,15 +11,15 @@ You receive:
 
 - An optional GitHub Issue number (e.g., `#42`). If not provided, pick the highest-priority unblocked issue.
 - Flags: `{ autoMerge: boolean, auto: boolean }`
-  - **Default (no flags):** Human-in-the-loop for spec approval. PR auto-created after verification. Manual merge.
+  - **Default (no flags):** Human-in-the-loop for plan approval. PR auto-created after verification. Manual merge.
   - `--auto-merge`**:** Same as default, but auto-merges the PR after creation.
-  - `--auto`**:** Skip spec approval + auto-create PR + auto-merge. Spec is still generated and saved.
+  - `--auto`**:** Skip plan approval + auto-create PR + auto-merge. Plan is still generated and saved.
 
 **Gate matrix:**
 
 | Gate | Default | --auto-merge | --auto |
 | --- | --- | --- | --- |
-| Spec approval | ✅ User approves | ✅ User approves | ⏭️ Skipped (spec still saved) |
+| Plan approval | ✅ User approves | ✅ User approves | ⏭️ Skipped (plan still saved) |
 | PR creation | ⏭️ Auto | ⏭️ Auto | ⏭️ Auto |
 | Merge after PR | ❌ Manual | ✅ Auto-merge | ✅ Auto-merge |
 
@@ -39,23 +39,25 @@ You receive:
 3. Pick the highest-priority unblocked issue. Priority order: issues labeled `critical` > `high` > `medium` > `low` > unlabeled.
 4. Present your choice to the user and wait for confirmation.
 
-## Spec Extraction
+## Plan Creation
 
 1. Fetch the full issue body: `gh issue view <number> --json title,body,labels`.
-2. Extract a structured spec into `specs/<issue-number>.md` covering: objective, acceptance criteria, affected layers, technical approach, E2E test cases, and dependencies.
+2. Run the `prd-to-plan` skill (from `/Users/hanche/.agents/skills/prd-to-plan/SKILL.md`) to produce `plans/<issue-no>_<short-name>.md`.
+   - The issue body is the PRD input.
+   - The plan file uses vertical tracer-bullet slices.
 3. **HITL Gate (unless `--auto`):**
-   - **Default / `--auto-merge`:** Present the spec to the user. Wait for approval. If the user edits, update the spec and re-present.
-   - `--auto`:** Skip user approval. Log that spec was auto-approved. Proceed immediately to implementation.
+   - **Default / `--auto-merge`:** Present the plan to the user. Wait for approval.
+   - `--auto`:** Skip user approval. Log that plan was auto-approved. Proceed immediately.
 
 ## Implementation
 
 1. Create a feature branch: `feat/<issue-number>-<short-description>`.
-2. Dispatch the **implementer agent** as a subagent, passing the spec file path.
+2. Dispatch the **implementer agent** as a subagent, passing the plan file path.
 3. Monitor for escalation. If the implementer reports it's stuck (3 failed attempts), proceed to Failure Recovery.
 
 ## Verification
 
-1. After the implementer completes, dispatch the **verifier agent** as a subagent, passing the spec file path.
+1. After the implementer completes, dispatch the **verifier agent** as a subagent, passing the plan file path.
 2. The verifier returns a structured report.
 3. **If verification PASSES:** Proceed directly to PR creation (no user gate). Log the verification report for the user's reference.
 4. **If verification FAILS (all modes):** Stop the loop. Do NOT create a PR. Post a diagnostic comment on the GitHub Issue. Present the user with recovery options (same as Failure Recovery below).
@@ -63,7 +65,7 @@ You receive:
 ## PR Creation
 
 1. Generate a PR description using the PR template (`.github/PULL_REQUEST_TEMPLATE.md`), populated from:
-  - The spec file
+  - The plan file
   - The git diff (`git diff main...HEAD`)
   - The implementer's documentation output
 2. **IMPORTANT:** The PR body MUST contain `Closes #<issue-number>` to auto-close the linked issue on merge. Always include this — never omit it.
@@ -99,9 +101,9 @@ When the implementer escalates (stuck after 3 attempts):
 
 ## Rules
 
-- **Default mode:** Require user confirmation at spec approval. PR creation and verification are automatic.
+- **Default mode:** Require user confirmation at plan approval. PR creation and verification are automatic.
 - `--auto-merge` **mode:** Same as default, plus auto-merge after PR creation.
-- `--auto` **mode:** Skip spec approval (spec still saved), auto-PR, auto-merge. Stop only on failure.
+- `--auto` **mode:** Skip plan approval (plan still saved), auto-PR, auto-merge. Stop only on failure.
 - **All modes:** On implementation failure (3 attempts) or verification failure — STOP. No PR, no merge. Post diagnostic, present recovery options.
 - Execute exactly ONE ticket per invocation, then stop.
 - Always update `progress.txt` at the end, regardless of outcome.
