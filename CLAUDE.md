@@ -42,7 +42,7 @@ Bootstrap phase is **COMPLETE** (2026-03-27). All tickets follow Standard Phase.
 ## Cross-Session Memory
 
 - `progress.txt` tracks session state and architecture (read at start, update at end)
-- GitHub issue body = spec. PR body = implementation record. No separate spec files.
+- GitHub issue body = PRD (requirements). `plans/<N>_<name>.md` = implementation plan (produced by prd-to-plan skill). PR body = implementation record.
 
 ---
 

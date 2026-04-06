@@ -66,7 +66,7 @@ None.
 
 - PostGraphile removed (#19) — was incompatible with schema stitching (Grafast executor), added unnecessary complexity. Single `/graphql` endpoint via NestJS code-first.
 - Frontend targets `/graphql` only (NestJS code-first)
-- specs/ directory removed — GitHub issue body is the spec, PR body is the implementation record
+- Three-step workflow: GitHub issue = PRD (what/why), plans/<N>_<name>.md = implementation plan via prd-to-plan skill (how/phases), PR body = implementation record
 - progress.txt tracked in git (not gitignored) for cross-session persistence
 - Makefile uses `docker compose exec` for pg_isready/psql — no local PostgreSQL tools required
 - Backend CORS enabled with `origin: true` for local development
