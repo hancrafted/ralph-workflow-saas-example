@@ -42,45 +42,16 @@ You receive:
 ## Spec Extraction
 
 1. Fetch the full issue body: `gh issue view <number> --json title,body,labels`.
-2. Extract a structured spec into `specs/<issue-number>.md` with this format:
-
-```markdown
-# Issue #<number>: <title>
-
-## Objective
-<one-paragraph summary of what this ticket accomplishes>
-
-## Acceptance Criteria
-- [ ] Criterion 1
-- [ ] Criterion 2
-(extracted from the issue's acceptance criteria section)
-
-## Affected Layers
-- [ ] Database (migration needed)
-- [ ] Backend (NestJS resolver/service)
-- [ ] Frontend (Angular component/page)
-
-## Technical Approach
-<your proposed implementation plan — be specific about files, modules, and order>
-
-## E2E Test Cases
-- Test case 1: <user action → expected result>
-- Test case 2: <user action → expected result>
-
-## Dependencies
-<other issues or external requirements>
-```
-
-1. **HITL Gate (unless **`--auto`**):**
-  - **Default / **`--auto-merge`**:** Present the spec to the user. Wait for approval. If the user edits, update the spec and re-present.
-  - `--auto`**:** Skip user approval. Log that spec was auto-approved. Proceed immediately to implementation.
+2. Extract a structured spec into `specs/<issue-number>.md` covering: objective, acceptance criteria, affected layers, technical approach, E2E test cases, and dependencies.
+3. **HITL Gate (unless `--auto`):**
+   - **Default / `--auto-merge`:** Present the spec to the user. Wait for approval. If the user edits, update the spec and re-present.
+   - `--auto`:** Skip user approval. Log that spec was auto-approved. Proceed immediately to implementation.
 
 ## Implementation
 
-1. Create a worktree and feature branch:`git worktree add .claude/worktrees/<branch-name> -b feat/<issue-number>-<short-description>`
-2. Switch to the worktree directory.
-3. Dispatch the **implementer agent** as a subagent, passing the spec file path and the current phase (Bootstrap or Standard).
-4. Monitor for escalation. If the implementer reports it's stuck (3 failed attempts), proceed to Failure Recovery.
+1. Create a feature branch: `feat/<issue-number>-<short-description>`.
+2. Dispatch the **implementer agent** as a subagent, passing the spec file path.
+3. Monitor for escalation. If the implementer reports it's stuck (3 failed attempts), proceed to Failure Recovery.
 
 ## Verification
 
@@ -129,10 +100,9 @@ When the implementer escalates (stuck after 3 attempts):
 ## Rules
 
 - **Default mode:** Require user confirmation at spec approval. PR creation and verification are automatic.
-- `--auto-merge`** mode:** Same as default, plus auto-merge after PR creation.
-- `--auto`** mode:** Skip spec approval (spec still saved), auto-PR, auto-merge. Stop only on failure.
+- `--auto-merge` **mode:** Same as default, plus auto-merge after PR creation.
+- `--auto` **mode:** Skip spec approval (spec still saved), auto-PR, auto-merge. Stop only on failure.
 - **All modes:** On implementation failure (3 attempts) or verification failure — STOP. No PR, no merge. Post diagnostic, present recovery options.
 - Execute exactly ONE ticket per invocation, then stop.
 - Always update `progress.txt` at the end, regardless of outcome.
-- If in Bootstrap phase, skip test/lint backpressure steps that have no tooling configured yet.
-- **Always include **`Closes #N`** in the PR body.** This is non-negotiable.
+- **Always include `Closes #N` in the PR body.** This is non-negotiable.
