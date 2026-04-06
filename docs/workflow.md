@@ -51,14 +51,13 @@ flowchart TD
 
 ### What the interview covers
 
-The `grill-me` skill walks through every branch of the design tree:
+The `grill-me` skill uses a two-pass interview process (see [Skill Architecture](#skill-architecture) for details):
 
-- **User story** — who benefits, what they want, why
-- **Acceptance criteria** — specific, testable, maps directly to E2E test cases
-- **Affected layers** — database, backend, frontend, or all three
-- **Edge cases** — invalid input, network failures, auth errors
-- **Scope boundaries** — what is explicitly NOT in this ticket
-- **Design / UX** — PrimeNG components, layout, mockups
+1. **Triage** — 2–3 questions to identify scope and affected layers
+2. **Domain deep-dives** — sequential sub-modules covering:
+   - **UI/UX & IA** (if frontend affected) — PrimeNG components, layout, user flows
+   - **Functional** (always) — user stories, acceptance criteria, edge cases, business rules
+   - **Non-functional** (always) — performance, security, scalability
 
 ### Dependency tracking
 
@@ -167,6 +166,92 @@ The first few tickets (initialise Angular 21, initialise NestJS, configure tooli
 
 ---
 
+## Skill Architecture
+
+Agent knowledge is organised as a **two-tier skill system** following the Praetorian "Thin Agent, Fat Platform" pattern:
+
+### Tier 1 — Core (CLAUDE.md)
+
+`CLAUDE.md` contains only project-wide constants that every agent needs on every turn:
+
+- Monorepo structure and pnpm conventions
+- Git workflow (branch naming, commit messages, PR rules)
+- Cross-session memory (`progress.txt`, issue body = spec)
+- A **safety-net fallback**: "if you don't know, ask a gateway"
+
+No domain knowledge lives here — it stays under 60 lines.
+
+### Tier 2 — Skill Library (.claude/skills/)
+
+Domain knowledge is stored in 14 standalone skill files. Each skill is a self-contained reference document that agents load on demand:
+
+| Skill | File | Domain |
+|-------|------|--------|
+| NestJS Quality | `nestjs-quality.md` | Module structure, providers, guards, DI patterns |
+| Schema-First Flow | `schema-first-flow.md` | Migration → entity → codegen workflow |
+| GraphQL Architecture | `graphql-architecture.md` | Resolver design, DTOs, code-first schema |
+| Angular Quality | `angular-quality.md` | Component architecture, signals, standalone components |
+| PrimeNG Patterns | `primeng-patterns.md` | UI component usage, theming, form integration |
+| Tailwind Conventions | `tailwind-conventions.md` | Utility-first CSS, responsive design, tokens |
+| E2E-First | `e2e-first.md` | Test-driven workflow, test pyramid, strategy |
+| Vitest Patterns | `vitest-patterns.md` | Unit/integration testing, mocking, assertions |
+| Playwright Conventions | `playwright-conventions.md` | Browser automation, page objects, selectors |
+| Grill-Me (Orchestrator) | `grill-me.md` | Two-pass requirements interview process |
+| Grill-Me: UI/UX & IA | `grill-me-ui-ux-ia.md` | Frontend UI and information architecture questions |
+| Grill-Me: Functional | `grill-me-functional.md` | Business logic and edge case questions |
+| Grill-Me: Non-Functional | `grill-me-nonfunctional.md` | Performance, security, scalability questions |
+| Requirements Template | `requirements-template.md` | Structured GitHub Issue formatting |
+
+### Gateway Agents
+
+Four **gateway agents** sit between the working agents and the skill library. A gateway receives a natural-language query, classifies the intent, and returns the relevant skill file paths with a one-line context hint. Working agents never hard-code skill paths — they ask the gateway.
+
+| Gateway | File | Skills Routed |
+|---------|------|---------------|
+| Backend | `gateway-backend.md` | nestjs-quality, schema-first-flow, graphql-architecture |
+| Frontend | `gateway-frontend.md` | angular-quality, primeng-patterns, tailwind-conventions |
+| Testing | `gateway-testing.md` | e2e-first, vitest-patterns, playwright-conventions |
+| Specs & Requirements | `gateway-specs.md` | grill-me (orchestrator + 3 sub-modules), requirements-template |
+
+```
+┌──────────────────────────────────────────────────────┐
+│  Working Agents (coordinator, implementer, verifier) │
+│  ↕ natural-language query                            │
+├──────────────────────────────────────────────────────┤
+│  Gateway Agents (backend, frontend, testing, specs)  │
+│  ↕ file path + context hint                          │
+├──────────────────────────────────────────────────────┤
+│  Skill Library (.claude/skills/*.md)                 │
+└──────────────────────────────────────────────────────┘
+```
+
+### Grill-Me Orchestration Flow
+
+The `grill-me` skill uses a **triage → sequential sub-module** pattern:
+
+```mermaid
+flowchart TD
+    A([Feature idea]) --> B[Pass 1: Triage\n2–3 high-level questions]
+    B --> C{Which layers\nare affected?}
+    C --> D{Frontend\naffected?}
+    D -->|Yes| E[grill-me-ui-ux-ia.md\nUI/UX deep-dive]
+    D -->|No| F
+    E --> F[grill-me-functional.md\nFunctional deep-dive]
+    F --> G[grill-me-nonfunctional.md\nNon-functional deep-dive]
+    G --> H[requirements-template.md\nFormat structured issue]
+    H --> I([GitHub Issue ready])
+```
+
+1. **Triage** — 2–3 questions to map the surface area (user story, affected layers, scope boundary)
+2. **UI/UX & IA** — invoked only if frontend is affected
+3. **Functional** — always invoked (business rules, edge cases, acceptance criteria)
+4. **Non-Functional** — always invoked (performance, security, scalability)
+5. **Output** — requirements template formats the final GitHub Issue
+
+Sub-modules run **sequentially** — each completes before the next starts. The orchestrator tracks decisions across modules and summarises after each one.
+
+---
+
 ## Schema-First Development (Standard Phase)
 
 All database-touching features follow this exact order:
@@ -239,15 +324,38 @@ You then choose:
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Project conventions and agent rules |
+| `CLAUDE.md` | Core project conventions (~40 lines, no domain knowledge) |
 | `progress.txt` | Cross-session memory (gitignored) |
 | `specs/<N>.md` | Extracted ticket spec (gitignored, local only) |
+| **Agents** | |
 | `.claude/agents/coordinator.md` | Ralph loop orchestrator |
 | `.claude/agents/implementer.md` | Four-phase coding agent |
 | `.claude/agents/verifier.md` | Pre-merge verification |
 | `.claude/agents/requirements-engineer.md` | Ticket writing with grill-me |
+| **Gateway Agents** | |
+| `.claude/agents/gateway-backend.md` | Routes to NestJS, schema-first, GraphQL skills |
+| `.claude/agents/gateway-frontend.md` | Routes to Angular, PrimeNG, Tailwind skills |
+| `.claude/agents/gateway-testing.md` | Routes to E2E-first, Vitest, Playwright skills |
+| `.claude/agents/gateway-specs.md` | Routes to grill-me and requirements skills |
+| **Skills** | |
+| `.claude/skills/nestjs-quality.md` | NestJS module structure, DI, guards, interceptors |
+| `.claude/skills/schema-first-flow.md` | Migration → entity → codegen workflow |
+| `.claude/skills/graphql-architecture.md` | Resolver design, DTOs, code-first schema |
+| `.claude/skills/angular-quality.md` | Component architecture, signals, standalone |
+| `.claude/skills/primeng-patterns.md` | PrimeNG component usage, theming, forms |
+| `.claude/skills/tailwind-conventions.md` | Utility-first CSS, responsive design |
+| `.claude/skills/e2e-first.md` | Test-driven workflow, test pyramid |
+| `.claude/skills/vitest-patterns.md` | Unit/integration testing, mocking |
+| `.claude/skills/playwright-conventions.md` | Browser automation, page objects |
+| `.claude/skills/grill-me.md` | Requirements interview orchestrator |
+| `.claude/skills/grill-me-ui-ux-ia.md` | UI/UX interview sub-module |
+| `.claude/skills/grill-me-functional.md` | Functional requirements sub-module |
+| `.claude/skills/grill-me-nonfunctional.md` | Non-functional requirements sub-module |
+| `.claude/skills/requirements-template.md` | Structured GitHub Issue template |
+| **Commands** | |
 | `.claude/commands/ralph.md` | `/ralph` entry point |
 | `.claude/commands/new-ticket.md` | `/new-ticket` entry point |
 | `.claude/commands/verify.md` | `/verify` entry point |
+| **GitHub** | |
 | `.github/ISSUE_TEMPLATE/` | Structured issue forms |
 | `.github/PULL_REQUEST_TEMPLATE.md` | PR knowledge artifact |
