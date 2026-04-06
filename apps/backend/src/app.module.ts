@@ -3,8 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProjectEntity } from './project/project.entity';
-import { ProjectModule } from './project/project.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -21,7 +20,7 @@ import { ProjectModule } from './project/project.module';
         username: config.get<string>('DB_USER', 'app_user'),
         password: config.get<string>('DB_PASSWORD', 'app_password'),
         database: config.get<string>('DB_NAME', 'hc_dev'),
-        entities: [ProjectEntity],
+        entities: [],
         migrations: ['dist/migrations/*.js'],
         synchronize: false,
       }),
@@ -38,7 +37,7 @@ import { ProjectModule } from './project/project.module';
         path: '/graphql',
       }),
     }),
-    ProjectModule,
+    HealthModule,
   ],
 })
 export class AppModule {}
